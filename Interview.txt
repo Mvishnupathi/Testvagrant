@@ -1,0 +1,73 @@
+class Team {
+  name;
+  results = [];
+  points = 0;
+  constructor(name) {
+    this.name = name;
+  }
+  addResult(result) {
+    if (![0, 1].includes(result)) {
+      throw new Error("Invalid result");
+    }
+    if (result) this.points++;
+    this.results.unshift(result);
+    if (this.results.length > 5) {
+      this.results.pop();
+    }
+  }
+  checkIfConsecutiveResults({ resultType, count }) {
+    let currentCount = 0;
+    for (let i = 0; i < this.results.length; i++) {
+      if (this.results[i] === resultType) {
+        currentCount++;
+        if (currentCount === count) {
+          return true;
+        }
+      } else {
+        currentCount = 0;
+      }
+    }
+    return false;
+  }
+}
+
+class TeamList {
+  teams;
+  constructor(teams) {
+    this.teams = teams;
+  }
+  addTeam(team) {
+    this.teams.push(team);
+  }
+  filterTeams({ resultType, count }) {
+    return this.teams.filter((team) => team.checkIfConsecutiveResults({ resultType, count }));
+  }
+
+  averagePoints(teams) {
+    if(!teams.length) return 0;
+    let totalPoints = 0;
+    for (let i = 0; i < teams.length; i++) {
+      totalPoints += teams[i].points;
+    }
+    return totalPoints / teams.length;
+  }
+}
+
+const teams = new TeamList([]);
+const rcb = new Team("RCB");
+teams.addTeam(rcb);
+rcb.addResult(0);
+rcb.addResult(1);
+rcb.addResult(1);
+rcb.addResult(1);
+rcb.addResult(1);
+
+const mi = new Team("MI");
+teams.addTeam(mi);
+mi.addResult(0);
+mi.addResult(1);
+mi.addResult(1);
+mi.addResult(0);
+mi.addResult(0);
+
+console.log(teams.filterTeams({ resultType: 1, count: 5 }));
